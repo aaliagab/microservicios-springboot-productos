@@ -1,8 +1,10 @@
 package com.ms.springboot.app.productos.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,23 +19,33 @@ import com.ms.springboot.app.productos.services.IProductoService;
 @RestController
 @RequestMapping("/microservicio/productos")
 public class ProductoController {
+	
+	@Autowired
+	private Environment ambiente;
 
 	@Autowired
 	IProductoService productoService;
 	
 	@GetMapping({"/","list"})
 	public List<Producto> listadoProducto(){
-		return productoService.findAll();
+		return productoService.findAll().stream().map(p->{
+			p.setPort(Integer.parseInt(ambiente.getProperty("local.server.port")));
+			return p;
+		}).collect(Collectors.toList());
 	}
 	
 	@GetMapping({"/{id}"})
 	public Producto obtenerProducto(@PathVariable Long id){
-		return productoService.getById(id);
+		Producto producto = productoService.getById(id);
+		producto.setPort(Integer.parseInt(ambiente.getProperty("local.server.port")));
+		return producto;
 	}
 	
 	@PostMapping("/")
 	public Producto guardarProducto(@RequestBody Producto producto) {
-		return productoService.save(producto);
+		Producto p = productoService.save(producto);
+		p.setPort(Integer.parseInt(ambiente.getProperty("local.server.port")));
+		return p;
 	}
 	
 	@DeleteMapping("/{id}")
