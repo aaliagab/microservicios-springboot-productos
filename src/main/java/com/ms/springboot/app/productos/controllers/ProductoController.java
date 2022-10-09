@@ -5,24 +5,24 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
+//import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ms.springboot.app.productos.models.entities.Producto;
 import com.ms.springboot.app.productos.services.IProductoService;
 
 @RestController
-@RequestMapping("/microservicio/productos")
+//@RequestMapping("/microservicio/productos")
 public class ProductoController {
 	
-	@Autowired
-	private Environment ambiente;
+	//@Autowired
+	//private Environment ambiente;
 	
 	@Value("${server.port}")
 	private Integer port;
@@ -44,6 +44,21 @@ public class ProductoController {
 		Producto p = productoService.getById(id);
 		//p.setPort(Integer.parseInt(ambiente.getProperty("local.server.port")));
 		p.setPort(port);
+		
+		//probando tolerancia a fallos
+		/*boolean ok = false;
+		if(!ok) {
+			throw new RuntimeException("no se pudo cargar el producto");
+		}*/
+			
+		//probando timeout
+		/*try {
+			Thread.sleep(2000L);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		return p;
 	}
 	
@@ -52,6 +67,7 @@ public class ProductoController {
 		Producto p = productoService.save(producto);
 		//p.setPort(Integer.parseInt(ambiente.getProperty("local.server.port")));
 		p.setPort(port);
+		
 		return p;
 	}
 	
